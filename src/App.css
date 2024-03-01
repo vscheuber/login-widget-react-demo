@@ -45,9 +45,9 @@
 
 /* Theming the Widget */
 :root {
-  --tw-colors-background-light-hs: 50 80%;
-  --tw-colors-background-light-l: 40%;
+  /* --tw-colors-background-light-hs: 48.9 100%;
+  --tw-colors-background-light-l: 50%; */
 
-  --tw-colors-tertiary-light-hs: 50 80%;
-  --tw-colors-tertiary-light-l: 40%;
+  --tw-colors-tertiary-light-hs: 48.9 100%;
+  --tw-colors-tertiary-light-l: 50%;
 }
