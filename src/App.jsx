@@ -20,7 +20,7 @@ function App() {
     config.set({
       forgerock: {
         serverConfig: {
-          baseUrl: 'https://openam-sdks.forgeblocks.com/am/',
+          baseUrl: 'https://openam-lm-poc.forgeblocks.com/am/',
           timeout: 3000,
         },
         // Optional but recommended configuration:
@@ -31,8 +31,8 @@ function App() {
       },
       style: {
         logo: {
-          dark: 'https://res.cloudinary.com/dmubfrefi/image/private/s--fFydpO-H--/c_crop,h_2813,w_5000,x_0,y_0/c_scale,w_3840/f_auto/q_auto/v1/dee-about-cms-prod-medias/cf68f541-fc92-4373-91cb-086ae0fe2f88/006-nike-logos-jordan-white.jpg?_a=BAAAROBs',
-          light: 'https://res.cloudinary.com/dmubfrefi/image/private/s--vWVG1GPn--/c_crop,h_2813,w_5000,x_0,y_0/c_scale,w_640/f_auto/q_auto/v1/dee-about-cms-prod-medias/cf68f541-fc92-4373-91cb-086ae0fe2f88/005-nike-logos-jordan-black.jpg?_a=BAAAROBs',
+          dark: 'https://purepng.com/public/uploads/large/purepng.com-liberty-mutual-insurance-logologobrand-logoiconslogos-2515199396954pqyu.png',
+          light: 'https://purepng.com/public/uploads/large/purepng.com-liberty-mutual-insurance-logologobrand-logoiconslogos-2515199396954pqyu.png',
           height: 200,
           width: 200,
         },
@@ -60,7 +60,7 @@ function App() {
         // After getting the user data, redirect to successUrl
         componentEvents.close();
 
-        // Use `location.replace` if you don't current URL in history
+        // Use `location.replace` if you don't want the current URL in history
         // Use `location.assign` if you want to keep this current URL in history
         location.assign(successUrl);
       }
@@ -95,7 +95,7 @@ function App() {
         <button
           onClick={() => {
             journeyEvents.start({
-              journey: 'TEST_LoginSuspendEmail'
+              journey: 'LMRegistration'
             });
             componentEvents.open();
           }}>
