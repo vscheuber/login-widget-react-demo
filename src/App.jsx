@@ -28,7 +28,18 @@ function App() {
         clientId: 'sdkPublicClient',
         redirectUri: window.location.href,
         scope: 'openid profile email address phone'
-      }
+      },
+      style: {
+        logo: {
+          dark: 'https://res.cloudinary.com/dmubfrefi/image/private/s--fFydpO-H--/c_crop,h_2813,w_5000,x_0,y_0/c_scale,w_3840/f_auto/q_auto/v1/dee-about-cms-prod-medias/cf68f541-fc92-4373-91cb-086ae0fe2f88/006-nike-logos-jordan-white.jpg?_a=BAAAROBs',
+          light: 'https://res.cloudinary.com/dmubfrefi/image/private/s--vWVG1GPn--/c_crop,h_2813,w_5000,x_0,y_0/c_scale,w_640/f_auto/q_auto/v1/dee-about-cms-prod-medias/cf68f541-fc92-4373-91cb-086ae0fe2f88/005-nike-logos-jordan-black.jpg?_a=BAAAROBs',
+          height: 200,
+          width: 200,
+        },
+        sections: {
+          header: true,
+        }
+      },
     });
 
     const widget = new Widget({ target: document.getElementById('widget-root') });
