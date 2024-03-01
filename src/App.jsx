@@ -7,7 +7,8 @@ import Widget, { component, configuration, journey } from '@forgerock/login-widg
 import '@forgerock/login-widget/widget.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [successUrl, setSuccessUrl] = useState('');
+  const [user, setUser] = useState();
 
   // Initiate all the Widget modules
   const config = configuration();
@@ -19,7 +20,7 @@ function App() {
     config.set({
       forgerock: {
         serverConfig: {
-          baseUrl: 'https://openam-lm-poc.forgeblocks.com/am/',
+          baseUrl: 'https://openam-sdks.forgeblocks.com/am/',
           timeout: 3000,
         },
         // Optional but recommended configuration:
@@ -34,6 +35,24 @@ function App() {
 
     const journeyEventsUnsub = journeyEvents.subscribe((event) => {
       console.log(event);
+
+      // Test for success event of journey
+      if (event.journey.successful) {
+        // Grab the successUrl from journey response
+        setSuccessUrl(event.journey.response.successUrl);
+      }
+      // Test for success event of user
+      if (event.user.successful) {
+        // Save user information, if desired
+        setUser(event.user.response);
+
+        // After getting the user data, redirect to successUrl
+        componentEvents.close();
+
+        // Use `location.replace` if you don't current URL in history
+        // Use `location.assign` if you want to keep this current URL in history
+        location.assign(successUrl);
+      }
     });
 
     const url = new URL(location.href);
@@ -41,6 +60,7 @@ function App() {
   
     if (suspendedId) {
       journeyEvents.start({ resumeUrl: location.href });
+      componentEvents.open();
     }
   
     return () => {
@@ -64,7 +84,7 @@ function App() {
         <button
           onClick={() => {
             journeyEvents.start({
-              journey: 'LMRegistration'
+              journey: 'TEST_LoginSuspendEmail'
             });
             componentEvents.open();
           }}>
