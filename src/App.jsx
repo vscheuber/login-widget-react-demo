@@ -29,6 +29,9 @@ function App() {
         redirectUri: window.location.href,
         scope: 'openid profile email address phone'
       },
+      links: {
+          termsAndConditions: 'https://www.libertymutualgroup.com/about-lm/corporate-information/terms-and-conditions',
+      },
       style: {
         logo: {
           dark: 'https://purepng.com/public/uploads/large/purepng.com-liberty-mutual-insurance-logologobrand-logoiconslogos-2515199396954pqyu.png',
