@@ -1,0 +1,17 @@
+{
+  "profiles": [
+    {
+      "name": "volker-dev",
+      "baseUrl": "https://openam-volker-dev.forgeblocks.com/am/",
+      "clientId": "sdkPublicClient",
+      "journey": "Passkey"
+    },
+    {
+      "name": "volker-demo",
+      "baseUrl": "https://openam-volker-demo.forgeblocks.com/am/",
+      "clientId": "sdkPublicClient",
+      "journey": "Passkey"
+    }
+  ],
+  "defaultProfile": "volker-dev"
+}

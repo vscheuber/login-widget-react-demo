@@ -1,5 +1,4 @@
-// import { useState } from 'react'
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -10,10 +9,17 @@ import Widget, {
   user,
 } from "@forgerock/login-widget";
 import "@forgerock/login-widget/widget.css";
+import widgetConfig from "./widget.config.json";
 
 function App() {
-  const [successUrl, setSuccessUrl] = useState("");
+  const [, setSuccessUrl] = useState("");
   const [userProfile, setUserProfile] = useState();
+  const [tokenIssuer, setTokenIssuer] = useState("");
+  const [profiles] = useState(widgetConfig.profiles);
+  const [selectedProfile, setSelectedProfile] = useState(
+    widgetConfig.profiles.find((p) => p.name === widgetConfig.defaultProfile) ||
+      widgetConfig.profiles[0],
+  );
 
   // Use refs to store API instances
   const journeyEventsRef = useRef(null);
@@ -42,12 +48,12 @@ function App() {
       config.set({
         forgerock: {
           serverConfig: {
-            baseUrl: "https://openam-volker-dev.forgeblocks.com/am/",
+            baseUrl: selectedProfile.baseUrl,
             timeout: 3000,
           },
           // Optional but recommended configuration:
           realmPath: "alpha",
-          clientId: "sdkPublicClient",
+          clientId: selectedProfile.clientId,
           // redirectUri: "http://localhost:5173",
           redirectUri: "https://login.scheuber.io:5173",
           scope: "openid profile email address",
@@ -91,8 +97,22 @@ function App() {
         }
 
         // Test for oauth success
-        if (event.oauth?.successful) {
+        if (event.oauth?.successful && event.oauth?.response?.idToken) {
           console.log("OAuth successful, tokens received");
+          try {
+            // Decode ID token to get issuer
+            const idToken = event.oauth.response.idToken;
+            const payload = idToken.split(".")[1];
+            const decodedPayload = JSON.parse(
+              atob(payload.replace(/-/g, "+").replace(/_/g, "/")),
+            );
+            console.log("Decoded ID token payload:", decodedPayload);
+            if (decodedPayload.iss) {
+              setTokenIssuer(decodedPayload.iss);
+            }
+          } catch (error) {
+            console.error("Failed to decode ID token:", error);
+          }
         }
 
         // Test for success event of user
@@ -133,7 +153,7 @@ function App() {
           `Attempting to resume journey with params: ${location.href}`,
         );
         await journeyEvents.start({
-          journey: "Passkey",
+          journey: selectedProfile.journey,
           resumeUrl: location.origin,
           forgerock: {
             query: {
@@ -151,7 +171,7 @@ function App() {
       };
     }
     init();
-  }, []);
+  }, [selectedProfile]);
 
   return (
     <>
@@ -164,6 +184,43 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
+
+      {/* Profile Selector */}
+      <div className="profile-selector" style={{ marginBottom: "1.5rem" }}>
+        <label htmlFor="profile-select" style={{ marginRight: "0.5rem" }}>
+          <strong>Connection Profile:</strong>
+        </label>
+        <select
+          id="profile-select"
+          value={selectedProfile.name}
+          onChange={(e) => {
+            const profile = profiles.find((p) => p.name === e.target.value);
+            if (profile) {
+              console.log("Switching to profile:", profile.name);
+              setSelectedProfile(profile);
+              // Clear user state when switching profiles
+              setUserProfile(null);
+              setTokenIssuer("");
+            }
+          }}
+          disabled={!!userProfile}
+          style={{ padding: "0.5rem", fontSize: "1rem" }}
+        >
+          {profiles.map((profile) => (
+            <option key={profile.name} value={profile.name}>
+              {profile.name}
+            </option>
+          ))}
+        </select>
+        {userProfile && (
+          <span
+            style={{ marginLeft: "0.5rem", fontSize: "0.9rem", color: "#888" }}
+          >
+            (logout to switch profiles)
+          </span>
+        )}
+      </div>
+
       <div className="card">
         {!userProfile && (
           <button
@@ -180,7 +237,7 @@ function App() {
               if (journeyEventsRef.current && componentEventsRef.current) {
                 console.log("Starting journey...");
                 journeyEventsRef.current.start({
-                  journey: "Passkey",
+                  journey: selectedProfile.journey,
                 });
                 console.log("Opening modal...");
                 componentEventsRef.current.open();
@@ -206,6 +263,7 @@ function App() {
                   // Clear React state
                   setUserProfile(null);
                   setSuccessUrl("");
+                  setTokenIssuer("");
 
                   // Clear browser storage to remove cached credentials
                   console.log("Clearing localStorage and sessionStorage...");
@@ -234,6 +292,9 @@ function App() {
               </p>
               <p>
                 <strong>Subject:</strong> {userProfile.sub || "N/A"}
+              </p>
+              <p>
+                <strong>Issuer:</strong> {tokenIssuer || "N/A"}
               </p>
             </div>
           </div>
